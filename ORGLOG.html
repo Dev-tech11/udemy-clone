@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login & Sign Up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     STEP 1 OF 3 — Paste your Google Apps Script URL below.
+     (Full instructions are at the bottom of this file
+      and were also given to you in the chat.)
+  ============================================================ */
+  :root{
+    --bg:#EEF1F6;
+    --surface:#FFFFFF;
+    --ink:#12172B;
+    --ink-soft:#5B637A;
+    --indigo-900:#1B2447;
+    --indigo-700:#2C3868;
+    --teal-500:#2FBFA6;
+    --teal-600:#25A692;
+    --amber-400:#F3A75B;
+    --danger:#E15554;
+    --radius:20px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(47,191,166,0.10), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(243,167,91,0.12), transparent 40%),
+      var(--bg);
+    font-family:'Inter', sans-serif;
+    color:var(--ink);
+    padding:20px;
+  }
+
+  /* ---------- Card container ---------- */
+  .wrapper{
+    position:relative;
+    width:800px;
+    max-width:100%;
+    min-height:500px;
+    background:var(--surface);
+    border-radius:var(--radius);
+    box-shadow:0 30px 60px -20px rgba(27,36,71,0.25);
+    overflow:hidden;
+    display:flex;
+  }
+
+  /* ---------- Form panels (Login / Sign Up) ---------- */
+  .forms{
+    position:relative;
+    width:58%;
+    display:flex;
+  }
+
+  .form-box{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    padding:56px 48px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    opacity:0;
+    transform:translateX(40px);
+    pointer-events:none;
+    transition:opacity .5s ease, transform .5s ease;
+  }
+
+  .form-box.active{
+    opacity:1;
+    transform:translateX(0);
+    pointer-events:auto;
+  }
+
+  .eyebrow{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--teal-600);
+    margin:0 0 6px;
+  }
+
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:28px;
+    font-weight:700;
+    margin:0 0 8px;
+  }
+
+  .sub{
+    color:var(--ink-soft);
+    font-size:14px;
+    margin:0 0 28px;
+  }
+
+  .field{
+    position:relative;
+    margin-bottom:18px;
+  }
+
+  .field input{
+    width:100%;
+    padding:14px 16px;
+    border-radius:12px;
+    border:1.5px solid #E1E5EF;
+    background:#F8F9FC;
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .25s ease, background .25s ease, box-shadow .25s ease;
+  }
+
+  .field input::placeholder{ color:#9AA1B4; }
+
+  .field input:focus{
+    border-color:var(--teal-500);
+    background:#fff;
+    box-shadow:0 0 0 4px rgba(47,191,166,0.12);
+  }
+
+  .field.error input{
+    border-color:var(--danger);
+  }
+
+  .field .msg{
+    font-size:12px;
+    color:var(--danger);
+    margin-top:6px;
+    display:none;
+    font-weight:500;
+  }
+
+  .field.error .msg{ display:block; }
+
+  .toggle-pw{
+    position:absolute;
+    right:14px;
+    top:14px;
+    cursor:pointer;
+    font-size:12px;
+    color:var(--ink-soft);
+    font-weight:600;
+    user-select:none;
+  }
+
+  button.submit{
+    margin-top:8px;
+    width:100%;
+    padding:14px 16px;
+    border:none;
+    border-radius:12px;
+    background:var(--indigo-900);
+    color:#fff;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    transition:transform .2s ease, background .2s ease, box-shadow .2s ease;
+  }
+
+  button.submit:hover{
+    background:var(--indigo-700);
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px -8px rgba(27,36,71,0.5);
+  }
+
+  button.submit:active{ transform:translateY(0); }
+
+  button.submit:disabled{
+    opacity:.7;
+    cursor:not-allowed;
+    transform:none;
+  }
+
+  .spinner{
+    width:16px; height:16px;
+    border:2px solid rgba(255,255,255,0.35);
+    border-top-color:#fff;
+    border-radius:50%;
+    display:none;
+    animation:spin .7s linear infinite;
+  }
+
+  button.submit.loading .spinner{ display:inline-block; }
+  button.submit.loading .btn-label{ opacity:.85; }
+
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .switch-line{
+    margin-top:22px;
+    font-size:13px;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+
+  .switch-line a{
+    color:var(--teal-600);
+    font-weight:600;
+    text-decoration:none;
+    cursor:pointer;
+  }
+
+  /* ---------- Sliding gradient side panel ---------- */
+  .side{
+    position:relative;
+    width:42%;
+    overflow:hidden;
+    background:linear-gradient(160deg, var(--indigo-900), var(--indigo-700));
+  }
+
+  .side::before, .side::after{
+    content:'';
+    position:absolute;
+    border-radius:50%;
+    filter:blur(10px);
+    opacity:.35;
+  }
+
+  .side::before{
+    width:220px; height:220px;
+    background:var(--teal-500);
+    top:-60px; left:-60px;
+    animation:float1 9s ease-in-out infinite;
+  }
+
+  .side::after{
+    width:180px; height:180px;
+    background:var(--amber-400);
+    bottom:-50px; right:-40px;
+    animation:float2 11s ease-in-out infinite;
+  }
+
+  @keyframes float1{
+    0%,100%{ transform:translate(0,0); }
+    50%{ transform:translate(30px, 25px); }
+  }
+  @keyframes float2{
+    0%,100%{ transform:translate(0,0); }
+    50%{ transform:translate(-25px, -20px); }
+  }
+
+  .side-inner{
+    position:relative;
+    z-index:2;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:40px 32px;
+    color:#fff;
+  }
+
+  .side-panel{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 32px;
+    opacity:0;
+    transform:translateX(-30px);
+    pointer-events:none;
+    transition:opacity .5s ease, transform .5s ease;
+  }
+
+  .side-panel.active{
+    opacity:1;
+    transform:translateX(0);
+    pointer-events:auto;
+  }
+
+  .key-icon{
+    width:56px; height:56px;
+    margin-bottom:18px;
+  }
+
+  .side-panel h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:22px;
+    margin:0 0 10px;
+  }
+
+  .side-panel p{
+    font-size:13.5px;
+    line-height:1.6;
+    color:rgba(255,255,255,0.75);
+    margin:0 0 26px;
+  }
+
+  .ghost-btn{
+    padding:11px 28px;
+    border-radius:12px;
+    border:1.5px solid rgba(255,255,255,0.55);
+    background:transparent;
+    color:#fff;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    cursor:pointer;
+    transition:background .25s ease, transform .2s ease;
+  }
+
+  .ghost-btn:hover{
+    background:rgba(255,255,255,0.12);
+    transform:translateY(-2px);
+  }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed;
+    top:24px;
+    left:50%;
+    transform:translate(-50%, -20px);
+    background:var(--indigo-900);
+    color:#fff;
+    padding:14px 22px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:500;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .35s ease, transform .35s ease;
+    z-index:50;
+    box-shadow:0 15px 30px -10px rgba(0,0,0,0.35);
+  }
+
+  .toast.show{
+    opacity:1;
+    transform:translate(-50%, 0);
+  }
+
+  .toast.error{ background:var(--danger); }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 720px){
+    .side{ display:none; }
+    .forms{ width:100%; }
+    .form-box{ padding:40px 26px; }
+    .wrapper{ min-height:auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"><span id="toastText"></span></div>
+
+<div class="wrapper">
+
+  <!-- ============ FORMS ============ -->
+  <div class="forms">
+
+    <!-- LOGIN -->
+    <form class="form-box active" id="loginForm" novalidate>
+      <p class="eyebrow">Welcome back</p>
+      <h1>Log in</h1>
+      <p class="sub">Enter your details to access your account.</p>
+
+      <div class="field" data-field="email">
+        <input type="email" name="email" placeholder="Email address" required />
+        <p class="msg">Please enter a valid email.</p>
+      </div>
+
+      <div class="field" data-field="password">
+        <input type="password" name="password" placeholder="Password" required />
+        <span class="toggle-pw">Show</span>
+        <p class="msg">Password is required.</p>
+      </div>
+
+      <button type="submit" class="submit">
+        <span class="spinner"></span>
+        <span class="btn-label">Log in</span>
+      </button>
+
+      <p class="switch-line">
+        Don't have an account? <a data-goto="signup">Sign up</a>
+      </p>
+    </form>
+
+    <!-- SIGN UP -->
+    <form class="form-box" id="signupForm" novalidate>
+      <p class="eyebrow">Get started</p>
+      <h1>Create account</h1>
+      <p class="sub">It only takes a minute.</p>
+
+      <div class="field" data-field="name">
+        <input type="text" name="name" placeholder="Full name" required />
+        <p class="msg">Please enter your name.</p>
+      </div>
+
+      <div class="field" data-field="email">
+        <input type="email" name="email" placeholder="Email address" required />
+        <p class="msg">Please enter a valid email.</p>
+      </div>
+
+      <div class="field" data-field="password">
+        <input type="password" name="password" placeholder="Password (min 6 characters)" required />
+        <span class="toggle-pw">Show</span>
+        <p class="msg">Password must be at least 6 characters.</p>
+      </div>
+
+      <button type="submit" class="submit">
+        <span class="spinner"></span>
+        <span class="btn-label">Create account</span>
+      </button>
+
+      <p class="switch-line">
+        Already have an account? <a data-goto="login">Log in</a>
+      </p>
+    </form>
+
+  </div>
+
+  <!-- ============ SIDE PANEL ============ -->
+  <div class="side">
+    <div class="side-inner">
+
+      <div class="side-panel active" id="sidePanelLogin">
+        <svg class="key-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4">
+          <circle cx="8" cy="15" r="4.5"/>
+          <path d="M11.5 11.5L20 3M20 3v4M20 3h-4"/>
+        </svg>
+        <h2>New here?</h2>
+        <p>Create an account and your details will be saved straight to our sheet — no setup on your side.</p>
+        <button type="button" class="ghost-btn" data-goto="signup">Sign up</button>
+      </div>
+
+      <div class="side-panel" id="sidePanelSignup">
+        <svg class="key-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4">
+          <rect x="4" y="10" width="16" height="10" rx="2"/>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+        <h2>Already a member?</h2>
+        <p>Log back in to pick up right where you left off.</p>
+        <button type="button" class="ghost-btn" data-goto="login">Log in</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   STEP 2 OF 3 — Paste your Google Apps Script Web App URL here.
+   (See the instructions at the bottom of this file.)
+============================================================ */
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHMplw-5OrcPHwcbnuf68ExQsUU03seqKsn0xXWvKjIJKRcMXzs1neQhWc72zcOukl/exec";
+
+/* ---------- Switching between Login / Sign up ---------- */
+const loginForm  = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const panelLogin  = document.getElementById('sidePanelLogin');
+const panelSignup = document.getElementById('sidePanelSignup');
+
+function goTo(target){
+  const showSignup = target === 'signup';
+  loginForm.classList.toggle('active', !showSignup);
+  signupForm.classList.toggle('active', showSignup);
+  panelLogin.classList.toggle('active', !showSignup);
+  panelSignup.classList.toggle('active', showSignup);
+}
+
+document.querySelectorAll('[data-goto]').forEach(el=>{
+  el.addEventListener('click', ()=> goTo(el.dataset.goto));
+});
+
+/* ---------- Show / hide password ---------- */
+document.querySelectorAll('.toggle-pw').forEach(toggle=>{
+  toggle.addEventListener('click', ()=>{
+    const input = toggle.previousElementSibling;
+    const isPw = input.type === 'password';
+    input.type = isPw ? 'text' : 'password';
+    toggle.textContent = isPw ? 'Hide' : 'Show';
+  });
+});
+
+/* ---------- Toast helper ---------- */
+const toast = document.getElementById('toast');
+const toastText = document.getElementById('toastText');
+let toastTimer;
+
+function showToast(message, isError=false){
+  clearTimeout(toastTimer);
+  toast.classList.toggle('error', isError);
+  toastText.textContent = message;
+  toast.classList.add('show');
+  toastTimer = setTimeout(()=> toast.classList.remove('show'), 3200);
+}
+
+/* ---------- Validation helpers ---------- */
+function setFieldError(fieldEl, hasError){
+  fieldEl.classList.toggle('error', hasError);
+}
+
+function isValidEmail(value){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+/* ---------- Generic submit handler ---------- */
+function handleSubmit(form, type){
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+
+    let valid = true;
+    const data = {};
+
+    form.querySelectorAll('.field').forEach(fieldEl=>{
+      const input = fieldEl.querySelector('input');
+      const name = input.name;
+      const value = input.value.trim();
+      data[name] = value;
+
+      let fieldValid = true;
+      if(name === 'email') fieldValid = isValidEmail(value);
+      else if(name === 'password') fieldValid = value.length >= (type==='signup' ? 6 : 1);
+      else fieldValid = value.length > 0;
+
+      setFieldError(fieldEl, !fieldValid);
+      if(!fieldValid) valid = false;
+    });
+
+    if(!valid) return;
+
+    if(GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE")){
+      showToast("Add your Google Apps Script URL first (see instructions at bottom of the file).", true);
+      return;
+    }
+
+    const btn = form.querySelector('button.submit');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try{
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Apps Script doesn't send CORS headers back; this still delivers the data
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ formType: type, ...data })
+      });
+
+      showToast(type === 'signup' ? "Account created! Details saved." : "Logged in! Details saved.");
+      form.reset();
+    }catch(err){
+      showToast("Something went wrong. Please try again.", true);
+    }finally{
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  });
+}
+
+handleSubmit(loginForm, 'login');
+handleSubmit(signupForm, 'signup');
+</script>
+
+<!-- ============================================================
+HOW TO CONNECT THIS PAGE TO GOOGLE SHEETS (do this once)
+============================================================
+
+STEP 1 — Create your sheet
+  1. Go to sheets.google.com and create a new blank sheet.
+  2. In row 1, add these column headers (exactly, in this order):
+     Timestamp | Form Type | Name | Email | Password
+
+STEP 2 — Add the script
+  1. In your sheet, click Extensions > Apps Script.
+  2. Delete anything in the editor and paste this:
+
+  function doPost(e) {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    sheet.appendRow([
+      new Date(),
+      e.parameter.formType || "",
+      e.parameter.name || "",
+      e.parameter.email || "",
+      e.parameter.password || ""
+    ]);
+    return ContentService.createTextOutput("OK");
+  }
+
+  3. Click the Save icon (name the project anything, e.g. "Auth Form").
+
+STEP 3 — Publish it as a web app
+  1. Click Deploy > New deployment.
+  2. Click the gear icon next to "Select type" and choose "Web app".
+  3. Set "Execute as" = Me.
+  4. Set "Who has access" = Anyone.
+  5. Click Deploy, then Authorize access (choose your Google account and
+     click "Advanced" > "Go to project (unsafe)" > Allow — this warning
+     only appears because it's your own new script).
+  6. Copy the "Web app URL" you're given.
+
+STEP 4 — Paste the URL into this file
+  Find this line near the top of the <script> section:
+     const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+  Replace the placeholder text with the URL you copied. Save the file.
+
+That's it. Open the HTML file in a browser (or add it to your project),
+submit the form, and check your Google Sheet — a new row will appear.
+
+IMPORTANT NOTE ON PASSWORDS:
+  Google Sheets stores everything as plain, readable text. That's fine
+  for things like a waitlist, contact form, or lead list — but it is
+  NOT safe for real user passwords. If this is a real login system
+  (not just collecting signups), use a proper backend/auth service
+  (e.g. Firebase Auth, Supabase, or your own server) instead of
+  saving passwords to a spreadsheet.
+============================================================ -->
+</body>
+</html>
