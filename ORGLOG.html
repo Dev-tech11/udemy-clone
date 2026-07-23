@@ -357,11 +357,42 @@
   .toast.error{ background:var(--danger); }
 
   /* ---------- Mobile ---------- */
-  @media (max-width: 720px){
-    .side{ display:none; }
-    .forms{ width:100%; }
-    .form-box{ padding:40px 26px; }
-    .wrapper{ min-height:auto; }
+  @media (max-width: 900px){
+    body{ padding:12px; }
+    .wrapper{
+      width:100%;
+      min-height:auto;
+      flex-direction:column;
+      overflow:visible;
+    }
+    .forms{
+      width:100%;
+      order:2;
+    }
+    .side{
+      width:100%;
+      order:1;
+      min-height:220px;
+      border-radius:20px 20px 0 0;
+    }
+    .side-inner{ padding:24px 20px; }
+    .side-panel{ padding:0 20px; }
+    .form-box{ padding:36px 24px; }
+  }
+
+  @media (max-width: 560px){
+    body{ padding:8px; }
+    .wrapper{ border-radius:16px; }
+    .form-box{ padding:28px 18px; }
+    h1{ font-size:24px; }
+    .sub{ font-size:13px; margin-bottom:20px; }
+    .field input{ padding:12px 14px; font-size:13px; }
+    button.submit{ padding:12px 14px; font-size:14px; }
+    .switch-line{ font-size:12px; margin-top:16px; }
+    .side{ min-height:180px; }
+    .side-panel h2{ font-size:18px; }
+    .side-panel p{ font-size:12px; }
+    .ghost-btn{ padding:10px 20px; font-size:12px; }
   }
 </style>
 </head>
