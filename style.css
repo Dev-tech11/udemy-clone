@@ -1,3 +1,12 @@
+* {
+     box-sizing: border-box;
+}
+
+body {
+     margin: 0;
+     font-family: 'Inter', sans-serif;
+}
+
 .whole {
      justify-content: space-between;
      gap: 10px;
@@ -5,37 +14,36 @@
      border-bottom: solid black 2px;
      display: flex;
      align-items: center;
-
-
+     flex-wrap: wrap;
 }
 
 .nav1 {
      color: purple;
-
 }
 
 .nav2 {
      border: solid black;
      border-radius: 30px;
-
-     width: 600px;
-     height: 30px;
+     width: min(600px, 100%);
+     height: 40px;
      gap: 20px;
      align-items: center;
+     display: flex;
+     padding: 0 12px;
+     flex: 1;
 }
 
 .nav2 input:focus {
      outline: none;
      border: none;
-
 }
 
 .nav2 input {
      outline: none;
-     width: 500px;
+     width: 100%;
      border: none;
      font-size: 19px;
-
+     background: transparent;
 }
 
 .nav3 {
@@ -43,6 +51,7 @@
      gap: 15px;
      border: none;
      font-size: 13px;
+     flex-wrap: wrap;
 }
 
 .category {
@@ -52,40 +61,46 @@
      gap: 10px;
      justify-content: space-around;
      border-bottom: solid black 1px;
+     flex-wrap: wrap;
 }
 
 .category p {
      background-color: purple;
      border-radius: 30px;
      padding: 11px;
-
+     margin: 0;
 }
 
 .saleimage img {
      width: 100%;
+     height: auto;
+     display: block;
 }
 
 .course img {
-     width: 200px;
-
-
-
+     width: 100%;
+     height: auto;
+     display: block;
 }
 
 .course {
-
      display: flex;
-     width: 200px;
+     width: 100%;
      justify-content: space-between;
      gap: 45px;
+     flex-wrap: wrap;
+     padding: 20px;
+}
 
+.course > div {
+     flex: 1 1 220px;
+     max-width: 260px;
 }
 
 .pre {
      background-color: rgb(80, 80, 166);
      align-items: center;
      width: 150px;
-
 }
 
 .rage {
@@ -95,44 +110,118 @@
      border-top: solid black 1px;
      gap: 20px;
      align-items: center;
-    
+     flex-wrap: wrap;
+     padding: 10px;
 }
-.low{
+
+.low {
      display: flex;
      justify-content: space-between;
      background-color: #2A2B3F;
+     flex-wrap: wrap;
+     gap: 10px;
+     padding: 10px;
 }
-.ud{
+
+.ud {
      border: solid black 2px;
      background-color: rgb(192, 176, 202);
 }
 
-.pp{
+.pp {
      border-bottom: solid black 1px;
      background-color: #2A2B3F;
      padding: 5px;
-     
 }
-.ws{
 
+.ws {
      background-color: #2A2B3F;
      padding: 10px;
 }
-.nas{
+
+.nas {
      font-size: 35px;
 }
-.re{
+
+.re {
      display: flex;
      justify-content: space-around;
-}
-.button-link{
-  text-decoration: none;
-  color: black;
-  font-size: 32px;
-  font-weight: bold;
-  cursor: pointer;
+     flex-wrap: wrap;
+     gap: 12px;
 }
 
-.button-.button-link {
-  opacity: 0.7;
+.button-link {
+     text-decoration: none;
+     color: black;
+     font-size: 32px;
+     font-weight: bold;
+     cursor: pointer;
+}
+
+@media (max-width: 768px) {
+     .whole {
+          flex-direction: column;
+          align-items: stretch;
+     }
+
+     .nav2 {
+          width: 100%;
+     }
+
+     .nav3 {
+          justify-content: space-between;
+     }
+
+     .category {
+          justify-content: center;
+     }
+
+     .course {
+          gap: 20px;
+     }
+
+     .course > div {
+          max-width: 100%;
+     }
+
+     .rage {
+          flex-direction: column;
+          align-items: flex-start;
+     }
+
+     .re {
+          flex-direction: column;
+          align-items: flex-start;
+     }
+
+     .nas {
+          font-size: 24px;
+     }
+
+     .button-link {
+          font-size: 20px;
+     }
+}
+
+@media (max-width: 480px) {
+     .nav2 input {
+          font-size: 16px;
+     }
+
+     .nav3 {
+          font-size: 12px;
+          gap: 10px;
+     }
+
+     .category p {
+          width: 100%;
+          text-align: center;
+     }
+
+     .low h1,
+     .low h2,
+     .pp h3,
+     .re h2 {
+          font-size: 1rem;
+     }
 }
