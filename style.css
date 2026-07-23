@@ -5,6 +5,7 @@
 body {
      margin: 0;
      font-family: 'Inter', sans-serif;
+     overflow-x: hidden;
 }
 
 .whole {
@@ -150,26 +151,53 @@ body {
      gap: 12px;
 }
 
+.navlog {
+     display: flex;
+     align-items: center;
+}
+
 .button-link {
      text-decoration: none;
-     color: black;
-     font-size: 32px;
+     color: #fff;
+     font-size: 20px;
      font-weight: bold;
      cursor: pointer;
+     background: linear-gradient(135deg, #6a1b9a, #4a148c);
+     border-radius: 999px;
+     width: 44px;
+     height: 44px;
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     box-shadow: 0 8px 18px rgba(74, 20, 140, 0.25);
+     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.button-link:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 10px 22px rgba(74, 20, 140, 0.3);
 }
 
 @media (max-width: 768px) {
      .whole {
           flex-direction: column;
           align-items: stretch;
+          padding: 12px;
      }
 
      .nav2 {
           width: 100%;
+          min-width: 0;
      }
 
      .nav3 {
           justify-content: space-between;
+          width: 100%;
+     }
+
+     .nav3 h1 {
+          margin: 0;
+          font-size: clamp(14px, 3vw, 18px);
      }
 
      .category {
@@ -178,10 +206,17 @@ body {
 
      .course {
           gap: 20px;
+          padding: 16px;
      }
 
      .course > div {
           max-width: 100%;
+          flex-basis: 100%;
+     }
+
+     .course h2 {
+          font-size: 1rem;
+          line-height: 1.35;
      }
 
      .rage {
@@ -197,13 +232,13 @@ body {
      .nas {
           font-size: 24px;
      }
-
-     .button-link {
-          font-size: 20px;
-     }
 }
 
 @media (max-width: 480px) {
+     .whole {
+          padding: 10px;
+     }
+
      .nav2 input {
           font-size: 16px;
      }
@@ -221,7 +256,15 @@ body {
      .low h1,
      .low h2,
      .pp h3,
-     .re h2 {
+     .re h2,
+     .re h1 {
           font-size: 1rem;
      }
+
+     .button-link {
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+     }
 }
+
